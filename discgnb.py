@@ -19,11 +19,15 @@ import time
 
 from sklearn.datasets import fetch_openml
 
+"""Download MNIST"""
+
 mnist = fetch_openml('mnist_784', as_frame=False, cache=False)
 
 mnist.data.shape
 
 mnist.target.shape
+
+"""Use first 60000 data points as the training set & scale the data"""
 
 kN_tr=60000;
 kN_test=10000;
@@ -40,13 +44,19 @@ ytest=mnist.target[kN_tr::,]
 ytest=np.int8(ytest)
 #
 
+"""Train a Gaussian Naive Bayes with maximum likelihood"""
+
 gnbml = GaussianNB();
 gnbml.fit(Xtrain, ytrain)
+
+"""Compute the accuracy of the maximum likelihood Gaussian Naive Bayes"""
 
 #
 pred_gnb_ml_train=gnbml.predict(Xtrain)
 score_gnb_ml_train = accuracy_score(pred_gnb_ml_train,ytrain)
 print("Maximum likelihood Gnb accuracy on training data:",score_gnb_ml_train)
+
+"""Train a logistic regression model"""
 
 #Let's train a logistic regression model
 Cval=1;
@@ -56,11 +66,17 @@ clf_logreg.fit(Xtrain, ytrain);
 run_time = time.time() - t0
 print("Training time for logistic regression: %.3f s" % run_time)
 
+"""Compute the accuracy of logistic regression"""
+
 score_lg = clf_logreg.score(Xtrain, ytrain)
 print("Logistic regression accuracy on training data: %.4f" % score_lg)
 
+"""Load a discriminatively trained Gaussian Naive Bayes model from file"""
+
 with open('gnb_disc_93p3.pkl','rb') as f:
     gnb_disc_read=pickle.load(f)
+
+"""Compute the accuracy of the discriminatively trained Gaussian Naive Bayes"""
 
 pred_gnb_disc_train=gnb_disc_read.predict(Xtrain)
 score_gnb_disc_train = accuracy_score(pred_gnb_disc_train,ytrain)
